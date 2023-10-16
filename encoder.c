@@ -1,40 +1,29 @@
 #include <stdio.h>
-#include <stdlib.h>
+
+void convertToBinary(FILE* input, FILE* output) {
+    int byte;
+    while ((byte = fgetc(input)) != EOF) {
+        for (int i = 7; i >= 0; i--) {
+            fprintf(output, "%d", (byte >> i) & 1);
+        }
+    }
+}
 
 int main() {
-    FILE *file = fopen("proj1.exe", "r");
-    FILE *file2 = fopen("output.txt", "w");
+    FILE* inputFile = fopen("sublime_text.exe", "rb");
+    FILE* outputFile = fopen("output.txt", "w");
 
-    if (file == NULL) {
-        printf("Не удалось открыть файл");
-        return 1;
-    }
-    if (file2 == NULL) {
-        printf("Не удалось открыть файл");
+    if (inputFile == NULL || outputFile == NULL) {
+        printf("Error in open file.");
         return 1;
     }
 
-    // Определение размера файла
-    fseek(file, 0, SEEK_END);
-    long file_size = ftell(file);
-    fseek(file, 0, SEEK_SET);
+    convertToBinary(inputFile, outputFile);
 
-    // Выделение памяти под буфер
-    char *buffer = (char*)malloc(file_size * sizeof(char));
+    fclose(inputFile);
+    fclose(outputFile);
 
-    // Чтение байтов файла
-    fread(buffer, sizeof(char), file_size, file);
-
-    // Закрытие файла
-    fclose(file);
-
-    // Вывод представления файла в виде 0 и 1
-    for (int i = 0; i < file_size; i++) {
-            int byte = buffer[i];
-            fwrite(&byte, sizeof(byte), sizeof(byte), file2);
-    }
-    fclose(file2);
-    free(buffer);
+    printf("Convertation complete.");
 
     return 0;
 }
